@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+	<node name="Server_Speech" pkg="gsr_ros" type="recognition.py" output="screen">
+		<param name="API" value="DeepSpeech" />
+		<param name='KEY1' value=''/>
+		<param name='KEY2' value=''/>
+		<param name="PATH" value="$(find gsr_ros)/src/" />
+	</node>
+	<!-- API Options: Google, Sphinx, Wit, Houndify, DeepSpeech-->
+	<!-- <node name="Client_Speech" pkg="gsr_ros" type="gpsr_client.py" output="screen">
+		<param name="PATH2" value="$(find gsr_ros)/txt/" />
+	</node> -->
+
+</launch>

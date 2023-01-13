@@ -1,0 +1,9 @@
+#goal definition
+string phrase
+string lang
+---
+#result definition
+string result
+---
+#feedback
+string feedback

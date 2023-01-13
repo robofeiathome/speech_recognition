@@ -1,0 +1,43 @@
+How many doors does the <room> have
+Where is the <placement> located
+Where is the <beacon> located
+In which room is the <placement>
+In which room is the <beacon>
+How many <placement> are in the <room>
+How many <beacon> are in the <room>
+How many <people> are in the crowd
+How many people in the crowd are <gesture>
+How many people in the crowd are <posppl>
+Tell me the number of <people> in the crowd
+Was the person <posprs> a <gprsng>
+Tell me if the person <gesture> was a <gprsn>
+Tell me if the person <posprs> was a <gprsn>
+Tell me how many people were wearing <color>
+How many <category> are there
+What's the color of the <object>
+How many objects are in the <placement>
+How many <category> are in the <placement>
+What objects are stored in the <placement>
+Where can I find the <object>
+Where can I find the <category>
+What is the category of the <object>
+Do the <object> and <object> belong to the same category
+Which is the <adja> object
+Which is the <adja> <category>
+Between the <object> and <object>, which one is <adjr>
+Who invented the C programming language
+When was the C programming language invented
+When was the B programming language invented
+Where does the term computer bug come from
+Who invented the first compiler
+Which robot is used in the Open Platform League
+Which robot is used in the Domestic Standard Platform League
+Which robot is used in the Social Standard Platform League
+What's the name of your team
+What time is it
+What day is today
+Do you have dreams
+In which city will next year's RoboCup be hosted
+What is the origin of the name Canada
+What is the capital of Canada
+What is the national anthem of Canada

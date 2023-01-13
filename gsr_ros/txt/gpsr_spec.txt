@@ -1,0 +1,48 @@
+<vbbring> to <name> at the <beacon> the <object> from the <placement>
+<vbbring> me the <object> from the <placement>
+<vbtake> the <object from the <placement> and <vbdeliver> it to me
+<vbtake> the <object> from the <placement> and <vbdeliver> it to <name> at the <beacon>
+<vbtake> the <object> from the <placement> and <vbplace> it on the <placement>
+Tell me the name of the person at the <beacon>
+Tell me the name of the person in the <room>
+<vbfind> the <object> in the <room>
+<vbtake> the <object> and <vbplace> it on the <placement>
+<vbplace> the <object on the <placement>
+<vbbring> me the <object>
+<vbdeliver> the <object> to me
+<vbdeliver> the <object> to <name> at the <beacon>
+<vbtake> the <object> from the <placement> and <vbplace> it on the <placement>
+<vbgopl> to the <placement>, <vbfind> the <object>, and <vbdeliver> it to <name> at the <beacon>
+<vbgopl> to the <placement>, <vbfind> the <object>, and <vbdeliver> it to me
+<vbgopl> to the <placement>, <vbfind> the <object>, and <vbplace> it on the <placement>
+answer a question to <name> at the <beacon>
+<vbspeak> <whattosay> to <name> at the <beacon>
+<vbfind> <name> in the <room> and answer a question
+<vbfind> a person in the <room> and answer a question
+<vbfind> someone in the <room> and answer a question
+<vbfind> <name> in the <room> and <vbspeak> <whattosay>
+<vbfind> a person in the <room> and <vbspeak> <whattosay>
+<vbfind> someone in the <room> and <vbspeak> <whattosay>
+<vbgopl> to the <room>, <vbfind> <name>, and answer a <question>
+<vbgopl> to the <room>, <vbfind> a person, and answer a <question>
+<vbgopl> to the <room>, <vbfind> someone, and answer a <question>
+<vbgopl> to the <room>, <vbfind> <name>, and <vbspeak> <whattosay>
+<vbgopl> to the <room>, <vbfind> a person, and <vbspeak> <whattosay>
+<vbgopl> to the <room>, <vbfind> someone, and <vbspeak> <whattosay>
+Tell me how many <object> there are on the <placement>
+<vbfind> the <object> in the <room>
+<vbfollow> <name> from the <beacon> to the <room>
+meet <name> at the <beacon> and <vbfollow> <pron> to the <room>
+meet <name> at the <beacon> and <vbfollow> <name> to the <room>
+<vbgopl> to the <beacon>, meet <name>, and <vbfollow> <pron> to the <room>
+<vbgopl> to the <beacon>, meet <name>, and <vbfollow> <name> to the <room>
+Tell me how many <object> there are on the <placement>
+<vbfind> the <object> in the <room>
+<vbfollow> <name> from the <beacon> to the <room>
+meet <name> at the <beacon> and <vbfollow> <pron> to the <room>
+<vbguide> <name> from the <beacon> to the <beacon>
+meet <name> at the <beacon> and <vbguide> <pron> to the <beacon>
+<vbgopl> to the <beacon>, meet <name>, and <vbguide <pron> to the <beacon>
+<vbguide> <name> to the <beacon>, you may find <pron> at the <beacon>
+<vbguide> <name> to the <beacon>, you can find <pron> at the <beacon>
+<vbguide> <name> to the <beacon>, you will find <pron> at the <beacon>

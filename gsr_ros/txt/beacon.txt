@@ -1,0 +1,17 @@
+bed
+armchair
+desk
+dining table
+chair
+baby chair
+sofa
+coffee table
+tv coach
+sink
+stove
+cabinet
+bidet
+shower
+bathtub
+toilet
+washbasin
