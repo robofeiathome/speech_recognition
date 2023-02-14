@@ -34,15 +34,15 @@ class GTTS_ROS:
         self._as.publish_feedback(self._feedback)
 
         #
-        if self.online == False:
-            os.system("flite -voice ~/Downloads/cmu_us_slt.flitevox '"+goal.phrase+"' /tmp/flite.wav && play /tmp/flite.wav")
-        else:    
-            # tts = gTTS(text=goal.phrase.encode().decode('utf-8'), lang='pt', tld='com.br')
-            # tts = gTTS(text=goal.phrase.encode().decode('utf-8'), lang='en', tld='co.uk')
-            tts = gTTS(text=goal.phrase.encode().decode('utf-8'), lang=goal.lang)
-            tts.save("talk.mp3")
-            os.system("mpg321 talk.mp3 -g 100 >/dev/null 2>&1")
-            # os.system("ffplay talk.mp3 -autoexit -nodisp")
+        # if self.online == False:
+        #     os.system("./flite/bin/flite -voice slt '"+goal.phrase+"' /tmp/flite.wav && play /tmp/flite.wav")
+        # else:    
+        # tts = gTTS(text=goal.phrase.decode('utf-8'), lang='pt', tld='com.br')
+        # tts = gTTS(text=goal.phrase.decode('utf-8'), lang='en', tld='co.uk')
+        tts = gTTS(text=goal.phrase, lang='en', tld='co.uk')
+        tts.save("talk.mp3")
+        # os.system("mpg321 talk.mp3/ -g 100 >/dev/null 2>&1")
+        os.system("ffplay talk.mp3 -autoexit -nodisp")
 
         # publish the result
         rospy.loginfo('%s: Succeeded' % self._action_name)
