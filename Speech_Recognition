@@ -1,19 +1,25 @@
 import speech_recognition as sr
-import pyaudio as pa
-rec = sr.Recognizer()
 
+def record_audio():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        audio = r.listen(source)
+        return audio
 
-with sr.Microphone() as microfone:
-    rec.adjust_for_ambient_noise(microfone)
-    print("Pode começar a falar:")
-    rec.pause_threshold = 0.8
-    audio = rec.listen(microfone)
+def transcribe_audio(audio):
+    r = sr.Recognizer()
     try:
-        texto = rec.recognize_google(audio, language="en-US")
-        print(texto)
-    except:
-        print("Não consegui escutar")
+        text = r.recognize_google(audio, language="pt-BR")
+        return text
+    except sr.UnknownValueError:
+        print("Sorry, I could not understand what you said.")
+        return None
 
+while True:
+    audio = record_audio()
+    text = transcribe_audio(audio)
+    if text is not None:
+        if "valer" in text:
+            break
 
-# para escolher qual microfone usar
-# print(sr.Microphone(4).list_microphone_names())
