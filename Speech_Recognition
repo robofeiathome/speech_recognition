@@ -1,0 +1,19 @@
+import speech_recognition as sr
+import pyaudio as pa
+rec = sr.Recognizer()
+
+
+with sr.Microphone() as microfone:
+    rec.adjust_for_ambient_noise(microfone)
+    print("Pode começar a falar:")
+    rec.pause_threshold = 0.8
+    audio = rec.listen(microfone)
+    try:
+        texto = rec.recognize_google(audio, language="en-US")
+        print(texto)
+    except:
+        print("Não consegui escutar")
+
+
+# para escolher qual microfone usar
+# print(sr.Microphone(4).list_microphone_names())
