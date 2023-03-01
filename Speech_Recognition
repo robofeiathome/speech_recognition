@@ -1,4 +1,5 @@
 import speech_recognition as sr
+keywords = ["era", "Era", "Hera", "hera"]
 
 def record_audio():
     r = sr.Recognizer()
@@ -10,7 +11,7 @@ def record_audio():
 def transcribe_audio(audio):
     r = sr.Recognizer()
     try:
-        text = r.recognize_google(audio, language="pt-BR")
+        text = r.recognize_google(audio, language="en-US")
         return text
     except sr.UnknownValueError:
         print("Sorry, I could not understand what you said.")
@@ -20,6 +21,8 @@ while True:
     audio = record_audio()
     text = transcribe_audio(audio)
     if text is not None:
-        if "valer" in text:
+        if text in keywords:
+            print("Fazer alguma função")
             break
+
 
