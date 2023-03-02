@@ -11,4 +11,5 @@ pip install gTTS
 pip install speechrecognition
 pip install jellyfish
 pip install PyAudio
-
+pip install sounddevice
+pip install scipy
