@@ -9,6 +9,7 @@ apt-get install -y libportaudiocpp0
 
 pip install gTTS
 pip install speechrecognition
+pip install git+https://github.com/openai/whisper.git
 pip install jellyfish
 pip install PyAudio
 pip install sounddevice
