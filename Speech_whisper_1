@@ -1,5 +1,7 @@
+'''
 import speech_recognition as sr
 import whisper as wp
+
 keywords = ["era", "Era", "Hera", "hera"]
 
 def record_audio():
@@ -25,11 +27,10 @@ while True:
     if text is not None:
         if text in keywords:
             print("Fazer alguma função")
-            break
-
-
-
+            break 
 '''
+
+
 import sounddevice as sd
 import numpy as np
 import scipy.io.wavfile as wav
@@ -53,4 +54,10 @@ playback = sd.playrec(audio, samplerate=fs, channels=1, blocking=True)
 sd.play(playback, fs)
 print("Reprodução concluída.")
 
-'''
+# import pyaudio
+
+# p = pyaudio.PyAudio()
+
+# for i in range(p.get_device_count()):
+#     dev = p.get_device_info_by_index(i)
+#     print((i, dev['name'], dev['maxInputChannels']))
