@@ -28,3 +28,29 @@ while True:
             break
 
 
+
+'''
+import sounddevice as sd
+import numpy as np
+import scipy.io.wavfile as wav
+
+# Configurações do áudio
+fs = 44100  # Taxa de amostragem
+duration = 5  # Duração da gravação em segundos
+device = 0  # Índice do dispositivo de gravação (pode variar de acordo com o seu sistema)
+
+# Gravação do áudio
+print("Gravando...")
+audio = sd.rec(int(fs * duration), samplerate=fs, channels=1, blocking=True, device=device)
+print("Gravação concluída.")
+
+# Salva o áudio em um arquivo WAV
+wav.write("gravacao.wav", fs, audio)
+
+# Reprodução do áudio gravado
+print("Reproduzindo...")
+playback = sd.playrec(audio, samplerate=fs, channels=1, blocking=True)
+sd.play(playback, fs)
+print("Reprodução concluída.")
+
+'''
