@@ -1,20 +1,18 @@
 import speech_recognition as sr
-import whisper as wp
+# import whisper as wp
+
 keywords = ["era", "Era", "Hera", "hera"]
-r = sr.Recognizer()
-mic = sr.Microphone()
+rec = sr.Recognizer()
 
 def record_audio():
-    with mic as source:
+    with sr.Microphone(1) as source:
         print("Listening...")
-        audio = r.listen(source)
-        return audio
+        audio = rec.listen(source)
 
-def transcribe_audio(audio):
     # model = wp.load_model("small")
     # audio_w = wp.pad_or_trim(audio)
     try:
-        text = r.recognize_whisper(audio_data=audio,model="small",language="english")
+        text = rec.recognize_whisper(audio_data=audio,model="small",language="english")
         # text = model.transcribe(audio)
         return text
     except sr.UnknownValueError:
@@ -22,9 +20,10 @@ def transcribe_audio(audio):
         return None
 
 while True:
-    audio = record_audio()
-    text = transcribe_audio(audio)
+    text = record_audio()
     if text is not None:
         if text in keywords:
             print("Fazer alguma função")
             break
+
+# print(sr.Microphone().list_microphone_names())
