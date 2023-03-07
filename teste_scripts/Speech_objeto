@@ -1,11 +1,14 @@
 import speech_recognition as sr
-keywords = ["era", "Era", "Hera", "hera"]
+import pyaudio
+
+keywords_hera = ["era", "Era", "Hera", "hera"]
+keywords_speech = ["speech recognition", "which recognition"]
 
 def record_audio():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
-        audio = r.listen(source)
+        audio = r.listen(source, phrase_time_limit=3)
         return audio
 
 def transcribe_audio(audio):
@@ -20,9 +23,14 @@ def transcribe_audio(audio):
 while True:
     audio = record_audio()
     text = transcribe_audio(audio)
-    if text is not None:
-        if text in keywords:
-            print("Fazer alguma função")
-            break
+    if text in keywords_hera:
+        print("yes")
+        break
 
+while True:
+    audio = record_audio()
+    text = transcribe_audio(audio)
+    if text in keywords_speech:
+        print("starting speech recognition task")
+        break
 
