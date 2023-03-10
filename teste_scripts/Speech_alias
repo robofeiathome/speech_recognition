@@ -1,8 +1,8 @@
 import speech_recognition as sr
 import pyaudio
 
-keywords_hera = ["era", "Era", "Hera", "hera"]
-keywords_speech = ["speech recognition", "which recognition", "speech", "recognition"]
+keywords_hera = ["era", "Era", "Hera", "hera", "Terror", "Cara", "hella"]
+keywords_speech = ["speech recognition", "which recognition", "speech", "recognition", "a speech recognition"]
 
 def record_audio():
     r = sr.Recognizer()
@@ -24,25 +24,21 @@ def transcribe_audio(audio):
 def recognize_alias():
     audio = record_audio()
     text = transcribe_audio(audio)
-    for alternative in text['alternative']:
-        if alternative['transcript'] in keywords_hera:
-            print("yes")
-            return True
+    if text in keywords_hera:
+        print("yes")
+        return True
 
 def start_task():
     audio = record_audio()
     text = transcribe_audio(audio)
-    for alternative in text['alternative']:
-        for word in keywords_speech:
-            if word in alternative['transcript']:
-                print("starting speech recognition task")
-                return True
-            else:
-                return False
+    if text in keywords_speech:
+        print("starting speech recognition task")
+        return True
+    else:
+        return False
 
 while True:
-    if(recognize_alias()):
-        while recognize_alias() != True:
-            continue
-    else:
-        continue
+    recognize_alias()
+    start_task()
+    if recognize_alias() == True:
+        start_task()
