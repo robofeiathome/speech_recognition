@@ -1,200 +1,167 @@
 #!/usr/bin/env python3
 
-from gsr_ros.msg import *
-from gsr_ros.srv import *
 import rospy
-import numpy
+from gsr_ros.msg import Opcs
+from gsr_ros.srv import Start, StartResponse
 import speech_recognition as sr
-import jellyfish as jf
+import jellyfish
 from difflib import SequenceMatcher
-import datetime
-import sys
 import os
 import time
 
-class Recognition_server():
+class RecognitionServer:
+    def __init__(self):
+        # Initialize the ROS node
+        rospy.init_node('SpeechRecognition')
+        
+        # Retrieve parameters from the ROS server
+        self.api = rospy.get_param('~API').lower()
+        self.key1 = rospy.get_param('~KEY1')
+        self.key2 = rospy.get_param('~KEY2')
+        self.path = rospy.get_param('~PATH')
+        
+        # Initialize the speech recognizer
+        self.recognizer = sr.Recognizer()
+        
+        # Set up the recognition service
+        self.service = rospy.Service('Recognition', Start, self.handle_recognition_request)
+        
+        # Log that the server is ready
+        rospy.loginfo("Recognition server ready.")
+        
+        # Initialize an in-memory cache for storing recent recognition results
+        self.cache = {}
 
-	def __init__(self):
-		rospy.init_node('SpeechRecognition')
-		self.API = rospy.get_param('~API')
-		self.API = self.API.lower()
-		self.Key1 = rospy.get_param('~KEY1')
-		self.Key2 = rospy.get_param('~KEY2')
-		self.PATH = rospy.get_param('~PATH')
-		self.r = sr.Recognizer()
-		self.s = rospy.Service('Recognition', Start, self.recognition)
-		rospy.loginfo("Ready to recognize")
-		rospy.spin()
+    def handle_recognition_request(self, req):
+        # Capture audio from the microphone
+        with sr.Microphone(sample_rate=16000) as source:
+            self.recognizer.adjust_for_ambient_noise(source, duration=2)
+            time.sleep(2)
+            os.system(f'ogg123 {self.path}/beep.ogg >/dev/null 2>&1')  # Play a beep sound
+            rospy.loginfo("Say something!")
+            audio = self.recognizer.record(source, duration=7)
 
-	def recognition(self,req):
-		chosen_one = ""
-		similar = 0.0
-		spec = ''
-		resp = []
-		choice = []
+        # Save the captured audio as a WAV file
+        with open(f"{self.path}/audio.wav", "wb") as f:
+            f.write(audio.get_wav_data())
 
-		with sr.Microphone(sample_rate=16000) as source:
-			self.r.adjust_for_ambient_noise(source, duration=2)
-			time.sleep(2)
-			os.system('ogg123 '+self.PATH+'/beep.ogg >/dev/null 2>&1')
-			#time.sleep(1)
-			print("Say something!")
-			#audio = r.listen(source) Listen is a method where the computer will stop listening when there is silence
-			#audio = r.record(source,duration=7) Record is a method where the duration is how many seconds must the computer record the voice
-			audio = self.r.record(source,duration=7)
+        # Recognize the captured audio
+        recognized_text = self.recognize_audio(audio)
 
-		with open(self.PATH+"/audio.wav", "wb") as f:
-			f.write(audio.get_wav_data())
+        # Check for specific commands or errors in the recognized text
+        if recognized_text.startswith("how much is"):
+            return StartResponse(spec=recognized_text, resp=[])
 
+        if recognized_text.startswith("API error;") or "Error while processing the audio" in recognized_text:
+            rospy.logwarn("API responded with an Error... Sorry")
+            return StartResponse(spec='', resp=[])
 
-		recog = self.API_Recognition(audio)
+        # Process the recognized text based on given specifications and choices
+        if not req.spec or not req.choices:
+            rospy.loginfo("No choices or specs provided. This is what was recognized:")
+            return StartResponse(spec=recognized_text, resp=[])
 
-		#print 'len do choices '+str(req.choices)
-		#print 'len do spec '+str(req.spec)
-		print ('I heard: %s'%recog)
+        return self.process_recognized_text(recognized_text, req)
 
-		z = recog.split()
-		if z[:3] == ['how', 'much', 'is']:
-			spec = recog
-			resp = []
-			return StartResponse(spec,resp)			
+    def process_recognized_text(self, recognized_text, req):
+        # Find specifications in the recognized text that are close to the provided specifications
+        closest_specs = self.find_closest_specs(recognized_text, req.spec)
+        
+        # If only one specification matches closely, find the best choices for it
+        if len(closest_specs) == 1:
+            spec = closest_specs[0]
+            resp = self.find_best_choices(spec, recognized_text, req.choices)
+            return StartResponse(spec=spec, resp=resp)
 
-		if recog == 'Error while processing the audio' or SequenceMatcher(None, recog, "API error; x").ratio() >= 0.75:
-			rospy.loginfo("API responded with and Error... Sorry")
-			spec = ''
-			resp = []
-			# x = gsr_ros.msg._Opcs.Opcs()
-			# resp.append(x)
-			# return None
+        # If multiple specifications match, find the best match based on the provided choices
+        best_match_spec = ""
+        best_match_choices = []
+        best_similarity = 0
+        for spec in closest_specs:
+            similarity, choices = self.find_best_choices(spec, recognized_text, req.choices, True)
+            if similarity > best_similarity:
+                best_similarity = similarity
+                best_match_spec = spec
+                best_match_choices = choices
 
-		elif req.spec == [''] or req.choices == '':
-			rospy.loginfo("You gave me no choices nor specs, This is what I heard")
-			spec = recog
-			resp = []
-			# x = gsr_ros.msg._Opcs.Opcs()
-			# resp.append(x)
+        return StartResponse(spec=best_match_spec, resp=best_match_choices)
 
-		elif req.choices == '':
-			spec = ''
-			closer = 0.0
-			p = self.Spec_calc(recog,req.spec)
-			if len(p) == 1:
-				spec = p[0]
-				resp = []
-			else:
-				for phrase in p:
-					x = jf.jaro_winkler(unicode(recog),unicode(phrase))
-					if x > closer:
-						closer = x
-						spec = phrase
+    def find_best_choices(self, spec, recognized_text, choices, return_similarity=False):
+        # Split the recognized text and specification into words
+        spec_words = spec.split()
+        recognized_words = recognized_text.split()
+        selected_choices = []
 
-				resp = []
+        # Replace placeholders in the specification with the best matching choice
+        new_phrase = spec
+        for i, word in enumerate(spec_words):
+            if word.startswith('<'):
+                choice_id = word[1:-1]
+                best_match = self.get_best_match_from_choices(choice_id, recognized_words, choices)
+                choice = Opcs(id=str(choice_id), values=[str(best_match)])
+                new_phrase = new_phrase.replace(choice_id, best_match)
+                selected_choices.append(choice)
 
-		else:
-			percao = 0.0
-			chosen = ''
-			p = self.Spec_calc(recog,req.spec)
+        # Return the choices with their similarity score if requested
+        if return_similarity:
+            similarity = SequenceMatcher(None, new_phrase, recognized_text).ratio()
+            return similarity, selected_choices
 
-			if len(p) == 1:
-				rospy.loginfo("Entered with only one phrase")
-				resp = self.Choices_Calc(p[0],recog,req.choices)
-				spec = p[0]
+        return selected_choices
 
-			else:
+    def get_best_match_from_choices(self, choice_id, recognized_words, choices):
+        # Find the best matching word from the provided choices for a given placeholder
+        best_match = ""
+        best_similarity = 0
+        for choice in choices:
+            if choice.id == choice_id:
+                for value in choice.values:
+                    similarity = max([SequenceMatcher(None, word, value).ratio() for word in recognized_words])
+                    if similarity > best_similarity:
+                        best_similarity = similarity
+                        best_match = value
 
-				for ph in p:
-					rospy.loginfo("Multiple phrase detected")
-					Perc, Ch = self.Choices_Calc(ph,recog,req.choices,True)
+        return best_match
 
-					if Perc > percao:
-						percao = Perc
-						resp = Ch
-						spec = ph
+    def find_closest_specs(self, recognized_text, specs):
+        # Find specifications that are close to the recognized text
+        threshold_similarity = 0.6
+        close_specs = []
+        for spec in specs:
+            similarity = jellyfish.jaro_winkler_similarity(recognized_text, spec)
+            if similarity >= threshold_similarity:
+                close_specs.append(spec)
 
+        return close_specs
 
-		return StartResponse(spec,resp)
+    def recognize_audio(self, audio):
+        # Use caching to avoid processing the same audio multiple times
+        audio_hash = hash(audio.get_wav_data())
+        if audio_hash in self.cache:
+            return self.cache[audio_hash]
 
-	def Choices_Calc(self,spec,phrase,Choices,Percentage=False):
+        # Recognize the audio using the specified API
+        try:
+            if self.api == 'google':
+                result = self.recognizer.recognize_google(audio)
+            elif self.api == 'sphinx':
+                result = self.recognizer.recognize_sphinx(audio)
+            elif self.api == 'wit':
+                result = self.recognizer.recognize_wit(audio, self.key1, self.key2)['_text']
+            elif self.api == 'houndify':
+                result = self.recognizer.recognize_houndify(audio, self.key1, self.key2)
+            elif self.api == "deepspeech":
+                result = os.popen(f"deepspeech --model {self.path}/models/output_graph.pbmm --trie {self.path}/models/trie --lm {self.path}/models/lm.binary --alphabet {self.path}/models/alphabet.txt --audio {self.path}/audio.wav").read().split('Running inference.')[1].strip()
 
-		s = spec.split()
-		p = phrase.split()
-		resp = []
-		i = 0
-		Sim_Rate = 0.0
-		interm = ''
-		newPhrase = spec
-		for xs in s:
-			if xs[0] == '<':
-				for N in Choices:
-					if N.id == xs[1:-1]:
-						Sim_Rate = 0.0
-						for v in N.values:
-							if i < len(p):
-								if SequenceMatcher(None, p[i], v).ratio() > Sim_Rate:
-									Sim_Rate = SequenceMatcher(None, p[i], v).ratio()
-									interm = v
-							else :
-								if SequenceMatcher(None, p[len(p)-1], v).ratio() > Sim_Rate:
-									Sim_Rate = SequenceMatcher(None, p[len(p)-1], v).ratio()
-									interm = v
-						x = gsr_ros.msg._Opcs.Opcs()
-						x.id = str(N.id)
-						x.values = [str(interm)]
-						newPhrase = newPhrase.replace(N.id,interm)
-						resp.append(x)
+            # Store the recognition result in the cache before returning
+            self.cache[audio_hash] = result
+            return result
 
-			i = i+1
-		if Percentage == True:
-			return SequenceMatcher(None, newPhrase, phrase).ratio(), resp
-		else:
-			return resp
-
-
-
-	def Spec_calc(self,phrase,Spec):
-
-		Sim_Rate = 0.0
-		Near_phrase = ''
-		plist = []
-		for i in Spec:
-			#tempVal = SequenceMatcher(None, phrase, i).ratio()
-			# tempVal = jf.jaro_winkler(unicode(phrase),unicode(i))
-			tempVal = jf.jaro_winkler(phrase,i)
-			if tempVal >= 0.6:
-				plist.append(i)
-		return  plist
-
-
-	def API_Recognition(self,audio):
-
-		try:
-			if self.API == 'google':
-				return self.r.recognize_google(audio)
-
-			if self.API == 'sphinx':
-				return self.r.recognize_sphinx(audio)
-
-			if self.API == 'wit':
-				return self.r.recognize_wit(audio,self.Key1,self.Key2)['_text']
-
-			if self.API == 'houndify':
-				return self.r.recognize_houndify(audio,self.Key1,self.Key2)
-
-			if self.API == "deepspeech":
-				x = os.popen("deepspeech --model "+self.PATH+"/models/output_graph.pbmm --trie "+self.PATH+"/models/trie --lm "+self.PATH+"/models/lm.binary --alphabet "+self.PATH+"/models/alphabet.txt --audio "+self.PATH+"/audio.wav").read()
- 
-				x = str(x.split('Running inference.'))
-				print ("I understood: "+str(x))
-				x = x[2:-4]
-				return x
-
-		except sr.UnknownValueError:
-			return 'Error while processing the audio'
-
-		except sr.RequestError as e:
-			return str("API error; {0}".format(e))
-
+        except sr.UnknownValueError:
+            return 'Error while processing the audio'
+        except sr.RequestError as e:
+            return f"API error; {e}"
 
 if __name__ == "__main__":
-
-	Recognition_server()
+    RecognitionServer()
+    rospy.spin()
