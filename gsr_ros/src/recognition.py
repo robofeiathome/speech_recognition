@@ -125,7 +125,7 @@ class RecognitionServer:
 
     def find_closest_specs(self, recognized_text, specs):
         # Find specifications that are close to the recognized text
-        threshold_similarity = 0.6
+        threshold_similarity = 0.7
         close_specs = []
         for spec in specs:
             similarity = jellyfish.jaro_winkler_similarity(recognized_text, spec)
@@ -144,15 +144,6 @@ class RecognitionServer:
         try:
             if self.api == 'google':
                 result = self.recognizer.recognize_google(audio)
-            elif self.api == 'sphinx':
-                result = self.recognizer.recognize_sphinx(audio)
-            elif self.api == 'wit':
-                result = self.recognizer.recognize_wit(audio, self.key1, self.key2)['_text']
-            elif self.api == 'houndify':
-                result = self.recognizer.recognize_houndify(audio, self.key1, self.key2)
-            elif self.api == "deepspeech":
-                result = os.popen(f"deepspeech --model {self.path}/models/output_graph.pbmm --trie {self.path}/models/trie --lm {self.path}/models/lm.binary --alphabet {self.path}/models/alphabet.txt --audio {self.path}/audio.wav").read().split('Running inference.')[1].strip()
-
             # Store the recognition result in the cache before returning
             self.cache[audio_hash] = result
             return result
