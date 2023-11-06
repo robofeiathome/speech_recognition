@@ -34,7 +34,7 @@ class RecognitionServer:
 
     def handle_recognition_request(self, req):
         # Capture audio from the microphone
-        with sr.Microphone(sample_rate=16000) as source:
+        with sr.Microphone(sample_rate=32000) as source:
             self.recognizer.adjust_for_ambient_noise(source, duration=2)
             time.sleep(2)
             os.system(f'ogg123 {self.path}/beep.ogg >/dev/null 2>&1')  # Play a beep sound
