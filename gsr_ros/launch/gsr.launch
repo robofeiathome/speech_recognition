@@ -1,0 +1,8 @@
+<launch>
+    <node name="Server_Speech" pkg="gsr_ros" type="recognition.py" output="screen">
+    		<param name="API" value="Google" />
+    		<param name='KEY1' value=''/>
+    		<param name='KEY2' value=''/>
+    		<param name="PATH" value="$(find gsr_ros)/src" />
+    </node>
+</launch>
