@@ -1,5 +1,0 @@
-Para o código funcionar, instale as seguintes bibliotecas com os seguintes comandos:
-
-pip install SpeechRecognition
-pip install whisper
-pip install pyaudio
