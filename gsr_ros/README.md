@@ -1,7 +1,7 @@
 ## gsr_ros ##
 
 **PYTHON**
-    - Python 2.7
+    - Python 3.7
 
 **General Speech Recognition**
     - Ros package for Speech Recognition
