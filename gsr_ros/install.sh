@@ -13,7 +13,7 @@ cd ~/Downloads && wget https://files.pythonhosted.org/packages/ab/42/b4f04721c5c
 cd ~/Downloads &&  tar xvzf PyAudio-0.2.11.tar.gz
 cd ~/Downloads/PyAudio-0.2.11 && sudo python setup.py install
 python -m pip install jellyfish
-python -m pip install deepspeech==0.4.1
+# python -m pip install deepspeech==0.4.1
 #pip install deepspeech==0.4.1
 
 sudo chmod +x ./src/recognition.py
